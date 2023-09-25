@@ -2,13 +2,16 @@ import { Button, Stack, Typography } from "@mui/material";
 import { formatEther } from "viem";
 
 import { useDialog } from "../hooks";
-import { AddressView, ContextMenu } from "./";
+import { AddressView, ContextMenu, GasForm } from "./";
 
 export interface TxRequest {
   data: string;
   from: string;
   to: string;
   value: string;
+  gas: string;
+  maxFeePerGas: string;
+  maxPriorityFeePerGas: string;
 }
 
 export function TxReviewDialog({ id }: { id: number }) {
@@ -16,7 +19,18 @@ export function TxReviewDialog({ id }: { id: number }) {
 
   if (!data) return null;
 
-  const { from, to, value: valueStr, data: calldata } = data;
+  const {
+    from,
+    to,
+    value: valueStr,
+    data: calldata,
+    gas,
+    maxFeePerGas,
+    maxPriorityFeePerGas,
+  } = data;
+
+  console.log(data);
+
   const value = BigInt(valueStr || 0);
 
   return (
@@ -32,6 +46,12 @@ export function TxReviewDialog({ id }: { id: number }) {
         <ContextMenu>{formatEther(BigInt(value))} Ξ</ContextMenu>
       </Stack>
       <Typography>data: {calldata}</Typography>
+
+      <GasForm
+        maxBaseFee={parseInt(maxFeePerGas, 16)}
+        priorityFee={parseInt(maxPriorityFeePerGas, 16)}
+        gasLimit={parseInt(gas, 16)}
+      />
 
       <Stack direction="row" justifyContent="center" spacing={2}>
         <Button variant="contained" color="error" onClick={() => reject()}>
